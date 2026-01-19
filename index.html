@@ -1,262 +1,201 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Corticosteroids + Glycyrrhizin — Drag & Drop Match</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corticosteroids + Antagonists Drag & Drop</title>
+
 <style>
-  :root{
-    --bg:#050816; --card:#101827; --ink:#e8eefc; --muted:#9ca3c7;
-    --ok:#22c55e; --bad:#ef4444; --accent:#6366f1;
-  }
-  *{box-sizing:border-box}
   body{
     margin:0;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-    background:radial-gradient(1200px 800px at 5% -10%, #1e293b, #020617 55%);
-    color:var(--ink);
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-  }
-  header{padding:18px 20px 0}
-  h1{margin:0 0 6px; font-size:clamp(20px,3.2vw,30px); font-weight:800}
-  p.lead{margin:0; color:var(--muted); max-width:900px}
-  .wrap{display:grid; gap:16px; padding:10px 20px 26px}
-  @media (min-width:1000px){ .wrap{grid-template-columns:1fr 1fr;} }
-  .panel{
-    background:linear-gradient(180deg,#111827,#020617);
-    border-radius:16px;
-    border:1px solid #1f2937;
-    padding:16px;
-    box-shadow:0 18px 45px rgba(0,0,0,.55);
-  }
-  .panel h2{margin:0 0 10px; font-size:18px; color:#c7d2fe}
-  .list,.grid{display:grid; gap:10px}
-  .list{grid-auto-rows:minmax(48px,auto)}
-  .pill{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
     background:#020617;
-    border-radius:12px;
-    border:1px solid #293548;
-    padding:10px 12px;
-    font-weight:700;
-    cursor:grab;
-    user-select:none;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    transition:transform .08s ease, border-color .12s ease;
+    color:#e5e7eb;
   }
-  .pill:hover{border-color:#6366f1}
-  .pill:active{transform:scale(.98); cursor:grabbing}
-  .pill.lock{cursor:default; opacity:.55; border-color:#374151}
-  .desc{
-    border-radius:12px;
-    border:1.5px dashed #283548;
-    padding:12px;
-    min-height:70px;
-    background:#020617;
+  header{
+    padding:20px;
+  }
+  h1{margin:0 0 6px;font-size:28px}
+  .red{color:#ff4d4d;font-weight:900}
+
+  .container{
     display:grid;
-    align-items:center;
-    transition:border-color .12s ease, background .12s ease;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    padding:20px;
   }
-  .desc .slotTitle{font-size:13px; font-weight:800; color:#c7d2fe; margin-bottom:4px}
-  .desc .text{font-size:14px; line-height:1.32; color:#e5e7eb}
-  .desc .accept{font-size:12px; font-style:italic; color:#9ca3c7; margin-top:6px}
-  .desc.correct{border-color:var(--ok); background:rgba(34,197,94,.08)}
-  .desc.wrong{border-color:var(--bad); background:rgba(239,68,68,.08)}
-  .footer{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:10px;
+
+  .panel{
+    background:#020617;
+    border:1px solid #374151;
+    border-radius:16px;
+    padding:16px;
   }
+
+  .list,.grid{display:grid;gap:10px}
+
+  .pill{
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid #4b5563;
+    cursor:grab;
+    font-weight:700;
+    background:#020617;
+  }
+  .pill.lock{opacity:.5;cursor:default}
+
+  .desc{
+    border:2px dashed #4b5563;
+    border-radius:12px;
+    padding:12px;
+    min-height:60px;
+  }
+  .desc.correct{border-color:#22c55e}
+  .desc.wrong{border-color:#ef4444}
+
   .btn{
-    border:none;
+    margin-top:10px;
+    padding:8px 14px;
     border-radius:999px;
-    padding:9px 14px;
+    border:none;
     font-weight:800;
     cursor:pointer;
-    background:linear-gradient(180deg,#6366f1,#4f46e5);
+    background:#6366f1;
     color:white;
-    box-shadow:0 8px 25px rgba(79,70,229,.55);
   }
-  .btn.secondary{
-    background:#111827;
-    color:#e5e7eb;
-    box-shadow:none;
-    border:1px solid #374151;
+  .btn.secondary{background:#111827;border:1px solid #374151}
+
+  .footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
   }
-  .score{font-weight:800}
-  .tiny{font-size:12px; color:#9ca3c7}
-  .tag{
-    display:inline-block;
-    padding:.2em .6em;
-    border-radius:999px;
-    border:1px solid #374151;
-    font-size:11px;
-    color:#c7d2fe;
-  }
-  .bucket{display:flex; gap:6px; flex-wrap:wrap}
-  .red{color:#ff6b6b; font-weight:800}
 </style>
 </head>
+
 <body>
 <header>
-  <h1>Corticosteroids + Glycyrrhizin — Drag & Drop Matching</h1>
-  <p class="lead">
-    Drag each <b>drug name</b> (left) onto its matching <b>description</b> (right).
-    Descriptions include drug <b>category</b> (short/intermediate/long acting), relative potency + duration, and the lecture’s
-    <span class="red">red-text</span> mechanism/notes. :contentReference[oaicite:4]{index=4}
+  <h1>Corticosteroids + Antagonists</h1>
+  <p>
+    Drag each <b>drug</b> to its matching <b>description</b>.
+    <span class="red">Red-text-only content used for antagonists.</span>
   </p>
 </header>
 
-<div class="wrap">
-  <section class="panel">
+<div class="container">
+  <div class="panel">
     <h2>Drugs</h2>
     <div id="drugList" class="list"></div>
-    <div class="footer">
-      <div class="bucket" id="legend"></div>
-      <div>
-        <button id="shuffle" class="btn">Shuffle</button>
-        <button id="reset" class="btn secondary">Reset</button>
-      </div>
-    </div>
-    <p class="tiny">Source: LECT_Corticosteroids (Iszard). :contentReference[oaicite:5]{index=5}</p>
-  </section>
+    <button class="btn" onclick="build()">Shuffle</button>
+  </div>
 
-  <section class="panel">
+  <div class="panel">
     <h2>Descriptions</h2>
     <div id="descGrid" class="grid"></div>
     <div class="footer">
-      <div id="scoreArea" class="score">0 / 9 correct</div>
+      <div id="score">0 / 14 correct</div>
+      <button class="btn secondary" onclick="build()">Reset</button>
     </div>
-  </section>
+  </div>
 </div>
 
 <script>
-const RED_MECH = "Red-text MOA themes: ↓ <b>prostaglandins</b> and <b>leukotrienes</b>; ↓ <b>proteolytic enzymes</b> and ↑ <b>apoptosis</b> of immune cells; ↓ <b>cytokines</b> and receptors; ↓ transmigration of <b>neutrophils</b>/<b>macrophages</b>; ↓ <b>cell adhesion molecules</b> → ↓ inflammation, immune suppression, ↓ hypersensitivity.";
-
 const ITEMS = [
-  // Short-to-medium acting (<12h) list shown in lecture (Hydrocortisone/Cortisone)
-  {id:"hydrocortisone", label:"Hydrocortisone", group:"Short-to-medium acting (<12h) glucocorticoid",
-   desc:`Category: <b>Short-to-medium acting</b> (<12h). Relative anti-inflammatory potency: <b>1</b>. Duration: <b>8–12 h</b>. Key effects: powerful anti-inflammatory + immunosuppressive. <span class="red">${RED_MECH}</span>`},
+  {id:"hydrocortisone",label:"Hydrocortisone",
+   desc:"Short acting glucocorticoid (8–12 h), anti-inflammatory potency = 1."},
 
-  {id:"cortisone", label:"Cortisone", group:"Short-to-medium acting (<12h) glucocorticoid",
-   desc:`Category: <b>Short-to-medium acting</b> (<12h). Lecture table: cortisol/cortisone class listed as short acting with ~<b>8–12 h</b> duration; relative anti-inflammatory activity shown slightly lower than hydrocortisone in comparisons. <span class="red">${RED_MECH}</span>`},
+  {id:"cortisone",label:"Cortisone",
+   desc:"Short acting glucocorticoid (8–12 h)."},
+  
+  {id:"prednisone",label:"Prednisone",
+   desc:"Intermediate acting glucocorticoid (12–36 h), potency = 4."},
 
-  // Intermediate acting (12–36h)
-  {id:"prednisone", label:"Prednisone", group:"Intermediate acting (12–36h) glucocorticoid",
-   desc:`Category: <b>Intermediate acting</b> (12–36h). Relative anti-inflammatory potency: <b>4</b>. Duration: <b>12–36 h</b>. Note (lecture framework): prednisone is listed among “inert steroids” in the 11β-HSD diagram context (paired with activation concepts). <span class="red">${RED_MECH}</span>`},
+  {id:"prednisolone",label:"Prednisolone",
+   desc:"Intermediate acting glucocorticoid (12–36 h), potency = 4."},
 
-  {id:"prednisolone", label:"Prednisolone", group:"Intermediate acting (12–36h) glucocorticoid",
-   desc:`Category: <b>Intermediate acting</b> (12–36h). Relative anti-inflammatory potency: <b>4</b>. Duration: <b>12–36 h</b>. Mechanism described: binds intracellular GR → complex translocates to nucleus → regulates gene transcription (biologic effect lasts longer than t½). <span class="red">${RED_MECH}</span>`},
+  {id:"methylprednisolone",label:"Methylprednisolone",
+   desc:"Intermediate acting glucocorticoid (12–36 h), potency = 5."},
 
-  {id:"methylprednisolone", label:"Methylprednisolone", group:"Intermediate acting (12–36h) glucocorticoid",
-   desc:`Category: <b>Intermediate acting</b> (12–36h). Relative anti-inflammatory potency: <b>5</b>. Duration: <b>12–36 h</b>. Used as a systemic glucocorticoid option when intermediate duration is preferred per dosing guidance. <span class="red">${RED_MECH}</span>`},
+  {id:"triamcinolone",label:"Triamcinolone",
+   desc:"Intermediate acting glucocorticoid (12–36 h), potency = 5."},
 
-  {id:"triamcinolone", label:"Triamcinolone", group:"Intermediate acting (12–36h) glucocorticoid",
-   desc:`Category: <b>Intermediate acting</b> (12–36h). Relative anti-inflammatory potency: <b>5</b>. Duration: <b>12–36 h</b>. Lecture dosing guidance favors short/intermediate agents vs long-acting when possible. <span class="red">${RED_MECH}</span>`},
+  {id:"betamethasone",label:"Betamethasone",
+   desc:"Long acting glucocorticoid (36–72 h), potency = 30."},
 
-  // Long acting (>36h)
-  {id:"betamethasone", label:"Betamethasone", group:"Long acting (>36h) glucocorticoid",
-   desc:`Category: <b>Long acting</b> (>36h). Relative anti-inflammatory potency: <b>30</b>. Duration: <b>36–72 h</b>. High biologic potency → higher risk of adverse effects with chronic use; lecture dosing guidance emphasizes lowest dose/shortest duration and preferring intermediate/short agents when possible. <span class="red">${RED_MECH}</span>`},
+  {id:"dexamethasone",label:"Dexamethasone",
+   desc:"Long acting glucocorticoid (36–72 h), potency = 30."},
 
-  {id:"dexamethasone", label:"Dexamethasone", group:"Long acting (>36h) glucocorticoid",
-   desc:`Category: <b>Long acting</b> (>36h). Relative anti-inflammatory potency: <b>30</b>. Duration: <b>36–72 h</b>. Lecture notes include broad indications (autoimmune/allergic/respiratory) and emphasize: immunosuppression → infection risk; abrupt stopping → adrenal crisis (HPA suppression); long-term risks include cataracts/glaucoma and peptic ulcer risk esp with NSAIDs. <span class="red">${RED_MECH}</span>`},
+  {id:"glycyrrhizin",label:"Glycyrrhizin",
+   desc:"<span class='red'>KNOWN INHIBITOR OF 11β-HSD2 → ↑ cortisol action at MR → ↑ Na⁺/H₂O retention, ↓ K⁺ → ↑ BP</span>"},
 
-  // Glycyrrhizin (licorice) — 11β-HSD2 inhibitor red text content
-  {id:"glycyrrhizin", label:"Glycyrrhizin", group:"11β-HSD2 inhibitor (licorice) — MR overactivation risk",
-   desc:`NOT a glucocorticoid drug — lecture lists it as a <b>known inhibitor of 11β-HSD2</b> (licorice root extract). ↓11β-HSD2 → excessive <b>MR activation by cortisol</b> → <b>↑ Na⁺ & H₂O retention</b>, <b>↑ K⁺ loss</b> and <b>↑ BP</b>. <span class="red">This is the key red-text clinical effect.</span>`}
+  {id:"fludrocortisone",label:"Fludrocortisone",
+   desc:"<span class='red'>Influence salt and water balance; cause sodium and water retention and active excretion of potassium → hypokalemia + metabolic alkalosis; primary mineralocorticoid is aldosterone</span>"},
+
+  {id:"metyrapone",label:"Metyrapone",
+   desc:"<span class='red'>Used diagnostically to confirm adrenal insufficiency</span>"},
+
+  {id:"spironolactone",label:"Spironolactone",
+   desc:"<span class='red'>Gynecomastia</span>"},
+
+  {id:"eplerenone",label:"Eplerenone",
+   desc:"<span class='red'>Blocks the binding of aldosterone and fludrocortisone</span>"},
+
+  {id:"ketoconazole",label:"Ketoconazole",
+   desc:"<span class='red'>Inhibits steroid hormone synthesis and fungal ergosterol synthesis</span>"}
 ];
 
-const $  = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const shuffle = arr => { for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; };
+const $=q=>document.querySelector(q);
+const $$=q=>[...document.querySelectorAll(q)];
+const shuffle=a=>a.sort(()=>Math.random()-.5);
+let picked=null;
 
-let picked = null;
+function build(){
+  $("#drugList").innerHTML="";
+  $("#descGrid").innerHTML="";
+  picked=null;
 
-function buildGame(){
-  const drugList = $("#drugList");
-  const descGrid = $("#descGrid");
-  drugList.innerHTML = "";
-  descGrid.innerHTML = "";
-
-  const drugs = shuffle([...ITEMS]);
-  const targets = shuffle([...ITEMS]);
-
-  const groups = [...new Set(ITEMS.map(i => i.group))];
-  $("#legend").innerHTML = groups.map(g => `<span class="tag">${g}</span>`).join("");
-
-  drugs.forEach(d => {
-    const el = document.createElement("div");
-    el.className = "pill";
-    el.textContent = d.label;
-    el.dataset.id = d.id;
-    el.title = d.group;
-    el.setAttribute("draggable","true");
-    el.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", d.id));
-    el.addEventListener("click", () => { if(!el.classList.contains("lock")) picked = d.id; });
-    drugList.appendChild(el);
+  shuffle([...ITEMS]).forEach(d=>{
+    const el=document.createElement("div");
+    el.className="pill";
+    el.textContent=d.label;
+    el.dataset.id=d.id;
+    el.draggable=true;
+    el.onclick=()=>picked=d.id;
+    el.ondragstart=e=>e.dataTransfer.setData("id",d.id);
+    $("#drugList").appendChild(el);
   });
 
-  targets.forEach(t => {
-    const box = document.createElement("div");
-    box.className = "desc";
-    box.dataset.id = t.id;
-    box.innerHTML = `
-      <div class="slotTitle">Description</div>
-      <div class="text">${t.desc}</div>
-      <div class="accept">Drop the matching drug here</div>
-    `;
-    box.addEventListener("dragover", e => e.preventDefault());
-    box.addEventListener("drop", e => { e.preventDefault(); handleDrop(e.dataTransfer.getData("text/plain"), box); });
-    box.addEventListener("click", () => { if(picked) handleDrop(picked, box); });
-    descGrid.appendChild(box);
+  shuffle([...ITEMS]).forEach(d=>{
+    const box=document.createElement("div");
+    box.className="desc";
+    box.dataset.id=d.id;
+    box.innerHTML=d.desc;
+    box.ondragover=e=>e.preventDefault();
+    box.ondrop=e=>{
+      e.preventDefault();
+      const id=e.dataTransfer.getData("id")||picked;
+      if(id===d.id){
+        box.classList.add("correct");
+        $$(`.pill`).find(p=>p.dataset.id===id).classList.add("lock");
+      } else {
+        box.classList.add("wrong");
+        setTimeout(()=>box.classList.remove("wrong"),600);
+      }
+      updateScore();
+    };
+    $("#descGrid").appendChild(box);
   });
 
-  updateScore();
-}
-
-function handleDrop(id, box){
-  if(!id || box.classList.contains("correct")) return;
-  const pill = document.querySelector(`.pill[data-id="${id}"]`);
-  if(!pill || pill.classList.contains("lock")) return;
-
-  if(id === box.dataset.id){
-    box.classList.remove("wrong");
-    box.classList.add("correct");
-    box.querySelector(".accept").innerHTML = `✅ Matched: <b>${pill.textContent}</b>`;
-    pill.classList.add("lock");
-    pill.setAttribute("draggable","false");
-  } else {
-    box.classList.add("wrong");
-    box.querySelector(".accept").textContent = "❌ Not a match, try again.";
-    setTimeout(() => {
-      box.classList.remove("wrong");
-      box.querySelector(".accept").textContent = "Drop the matching drug here";
-    }, 750);
-  }
-  picked = null;
   updateScore();
 }
 
 function updateScore(){
-  const correct = $$(".desc.correct").length;
-  $("#scoreArea").textContent = `${correct} / ${ITEMS.length} correct` + (correct===ITEMS.length ? " – All matched! 🎉" : "");
+  const c=$$(".desc.correct").length;
+  $("#score").textContent=`${c} / ${ITEMS.length} correct`;
 }
 
-$("#shuffle").addEventListener("click", buildGame);
-$("#reset").addEventListener("click", () => {
-  $$(".pill").forEach(p => { p.classList.remove("lock"); p.setAttribute("draggable","true"); });
-  $$(".desc").forEach(d => { d.classList.remove("correct","wrong"); d.querySelector(".accept").textContent = "Drop the matching drug here"; });
-  updateScore();
-});
-
-buildGame();
+build();
 </script>
 </body>
 </html>
